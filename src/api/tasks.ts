@@ -38,8 +38,18 @@ export interface UpdateTaskPayload {
 }
 
 
-export const getTasks = async () => {
-  const { data } = await api.get<TasksResponse>("/api/tasks");
+export interface TaskFilters {
+  status?: Task["status"] | "all";
+  priority?: Task["priority"] | "all";
+  search?: string;
+}
+
+export const getTasks = async (filters?: TaskFilters) => {
+  const params = new URLSearchParams();
+  if (filters?.status && filters.status !== "all") params.set("status", filters.status);
+  if (filters?.priority && filters.priority !== "all") params.set("priority", filters.priority);
+  if (filters?.search) params.set("search", filters.search);
+  const { data } = await api.get<TasksResponse>(`/api/tasks?${params.toString()}`);
   return data.data;
 };
 

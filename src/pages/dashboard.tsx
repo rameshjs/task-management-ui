@@ -4,10 +4,19 @@ import { toast } from "sonner";
 import { PlusIcon, LogOutIcon, Loader2Icon } from "lucide-react";
 
 import { useAuth } from "@/context/auth-context";
-import { getTasks, createTask, updateTask, deleteTask, type Task } from "@/api/tasks";
+import {
+  getTasks,
+  createTask,
+  updateTask,
+  deleteTask,
+  type Task,
+  type TaskFilters,
+} from "@/api/tasks";
+import { useDebounce } from "@/hooks/use-debounce";
 import { Button } from "@/components/ui/button";
 import { TaskTable } from "@/components/tasks/task-table";
 import { getTaskColumns } from "@/components/tasks/task-columns";
+import { TaskFiltersBar } from "@/components/tasks/task-filters";
 import { CreateTaskModal } from "@/components/tasks/create-task-modal";
 import { EditTaskModal } from "@/components/tasks/edit-task-modal";
 import { DeleteTaskModal } from "@/components/tasks/delete-task-modal";
@@ -22,12 +31,19 @@ export default function DashboardPage() {
   const { logout } = useAuth();
   const queryClient = useQueryClient();
   const [modal, setModal] = useState<ModalState>({ type: "closed" });
+  const [filters, setFilters] = useState<TaskFilters>({});
+
+  const debouncedSearch = useDebounce(filters.search, 300);
+  const queryFilters: TaskFilters = {
+    ...filters,
+    search: debouncedSearch,
+  };
 
   const closeModal = () => setModal({ type: "closed" });
 
   const { data: tasks = [], isLoading } = useQuery({
-    queryKey: ["tasks"],
-    queryFn: getTasks,
+    queryKey: ["tasks", queryFilters],
+    queryFn: () => getTasks(queryFilters),
   });
 
   const createMutation = useMutation({
@@ -83,6 +99,8 @@ export default function DashboardPage() {
           </Button>
         </div>
       </div>
+
+      <TaskFiltersBar filters={filters} onChange={setFilters} />
 
       {isLoading ? (
         <div className="flex flex-1 items-center justify-center">
