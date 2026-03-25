@@ -1,21 +1,27 @@
-# React + TypeScript + Vite + shadcn/ui
+# Task Management UI
 
-This is a template for a new Vite project with React, TypeScript, and shadcn/ui.
+Frontend for the task management API. Built with React, TypeScript, Vite, shadcn/ui, TanStack Table, and React Query.
 
-## Adding components
+## Setup
 
-To add components to your app, run the following command:
-
-```bash
-npx shadcn@latest add button
+```
+bun install
 ```
 
-This will place the ui components in the `src/components` directory.
+Create a `.env` file:
 
-## Using components
+```
+VITE_API_BASE_URL=http://localhost:8080
+```
 
-To use the components in your app, import them as follows:
+## Run
 
-```tsx
-import { Button } from "@/components/ui/button"
+```
+bun run dev
+```
+
+## Build
+
+```
+bun run build
 ```
